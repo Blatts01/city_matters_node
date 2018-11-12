@@ -1,14 +1,16 @@
 #!/usr/bin/python3
 
-import time
+import time as t
 import sys
 import serial
+
+from tools import GPIO
 
 TTYADDR = "/dev/ttyAMA0"
 
 
 class RN2843():
-    """Microchip RN2903 and RN2483 LoRa Wireless Modules
+    """Microchip RN2483 LoRa Wireless Module
 
     This class implements all the functions that are available in the
     modules for evaluation.
@@ -64,7 +66,7 @@ class RN2843():
         "MAC_UPCTR_SET": b"mac set upctr {}",
         "MAC_DNCTR_SET": b"mac set dnctr {}",
 
-        #MAC get Commands
+        # MAC get Commands
         "MAC_DEVADDR": b"mac get devaddr",
         "MAC_DEVEUI": b"mac get deveui",
         "MAC_APPEUI": b"mac get appeui",
@@ -85,24 +87,73 @@ class RN2843():
         "MAC_UPCTR": b"mac get upctr",
         "MAC_DNCTR": b"mac get dnctr",
 
+        # RADIO Commands
+        "RADIO_RX": b"radio rx {}",
+        "RADIO_TX": b"radio tx {}",
+        "RADIO_CW": b"radio cw {}",
 
+        # RADIO set Commands
+        "RADIO_BT_SET": b"radio set bt {}",
+        "RADIO_MOD_SET": b"radio set mod {}",
+        "RADIO_FREQ_SET": b"radio set freq {}",
+        "RADIO_PWR_SET": b"radio set pwr {}",
+        "RADIO_SF_SET": b"radio set sf {}",
+        "RADIO_AFCBW_SET": b"radio set afcbw {}",
+        "RADIO_RXBW_SET": b"radio set rxbw {}",
+        "RADIO_BITRATE_SET": b"radio set bitrate {}",
+        "RADIO_FDEV_SET": b"radio set fdev {}",
+        "RADIO_PRLEN_SET": b"radio set prlen {}",
+        "RADIO_CRC_SET": b"radio set crc {}",
+        "RADIO_IQI_SET": b"radio set iqi {}",
+        "RADIO_CR_SET": b"radio set cr {}",
+        "RADIO_WDT_SET": b"radio set wdt {}",
+        "RADIO_SYNC_SET": b"radio set sync {}",
+        "RADIO_BW_SET": b"radio set bw {}",
 
-        
+        # RADIO get Commands
+        "RADIO_BT": b"radio get bt",
+        "RADIO_MOD": b"radio get mod",
+        "RADIO_FREQ": b"radio get freq",
+        "RADIO_PWR": b"radio get pwr",
+        "RADIO_SF": b"radio get sf",
+        "RADIO_AFCBW": b"radio get afcbw",
+        "RADIO_RXBW": b"radio get rxbw",
+        "RADIO_BITRATE": b"radio get bitrate",
+        "RADIO_FDEV": b"radio get fdev",
+        "RADIO_PRLEN": b"radio get prlen",
+        "RADIO_CRC": b"radio get crc",
+        "RADIO_IQI": b"radio get iqi",
+        "RADIO_CR": b"radio get cr",
+        "RADIO_WDT": b"radio get wdt",
+        "RADIO_SYNC": b"radio get sync",
+        "RADIO_BW": b"radio get bw",
     }
 
-    def __init__(self, ser=None, verbose=False):
-        self.verbose = verbose
-        self.ser = ser
-        if self.ser == None:
-            raise ValueError('No valid serial port')
-        # execute reset of the module by pulling down a pin
-        if sys.platform == "pyboard":
-            RN_RESET_PIN = pyb.Pin(pyb.Pin.cpu.A5, mode=pyb.Pin.OUT_PP)
-            RN_RESET_PIN.value(1)
-            time.sleep(0.25)
-            RN_RESET_PIN.value(0)
-            time.sleep(0.25)
-            RN_RESET_PIN.value(1)
+    def __init__(self, port=None, reset_gpio_path=None):
+        #reset the module
+        self._reset_gpio = GPIO(reset_gpio_path, "out", 0)
+        t.sleep(0.5)
+        self._reset_gpio.set_value(1)
+
+        try:
+            self._serial = serial.Serial(port,
+                                         baudrate=57600,
+                                         bytesize=serial.EIGHTBITS,
+                                         parity=serial.PARITY_NONE,
+                                         stopbits=serial.STOPBITS_ONE,
+                                         write_timeout=1.0)
+        except:
+            return -1
+
+        self._check_connection()
+
+
+    def _check_connection(self):
+
+    def _write_command(self, command):
+        cmd
+        self._serial.
+
 
     def getConn(self):
         return self.ser
