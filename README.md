@@ -1,6 +1,6 @@
 # city_matters_node
 
 
-uartS02 is GPS
-uartS03 is LoRA
+uartS01 is GPS
+uartS02 is LoRA
 
